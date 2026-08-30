@@ -8,6 +8,12 @@ extends CanvasLayer
 @export var star_color := Color(0.55, 0.85, 1.0, 0.5)
 @export var cell := 96.0
 @export var parallax := 0.32
+# Neon gradient sky (top -> bottom). Drawn behind everything.
+@export var sky_top := Color("#0a1030")
+@export var sky_bottom := Color("#2a0a3e")
+@export var sky_pulse_amt := 0.08
+
+var _sky_tex: GradientTexture2D
 
 var _ctrl: Control
 
@@ -20,6 +26,20 @@ func _ready() -> void:
 	_ctrl.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_ctrl.draw.connect(_on_draw)
 	add_child(_ctrl)
+	_build_sky()
+
+func _build_sky() -> void:
+	var g := Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
+	g.colors = PackedColorArray([sky_top, sky_top.lerp(sky_bottom, 0.5), sky_bottom])
+	var tex := GradientTexture2D.new()
+	tex.gradient = g
+	tex.width = 2
+	tex.height = 256
+	tex.fill = GradientTexture2D.FILL_LINEAR
+	tex.fill_from = Vector2(0.5, 0.0)
+	tex.fill_to = Vector2(0.5, 1.0)
+	_sky_tex = tex
 
 func _process(_delta: float) -> void:
 	if _ctrl != null:
@@ -27,6 +47,10 @@ func _process(_delta: float) -> void:
 
 func _on_draw() -> void:
 	var vp := _ctrl.get_viewport_rect().size
+	if _sky_tex != null:
+		var pulse := 1.0 + sin(Time.get_ticks_msec() / 900.0) * sky_pulse_amt
+		_ctrl.draw_texture_rect(_sky_tex, Rect2(Vector2.ZERO, vp), false,
+				Color(1, 1, 1, 1.0).lerp(Color(1.05, 1.05, 1.15, 1.0), pulse - 1.0))
 	var cam := get_viewport().get_camera_2d()
 	var origin := Vector2.ZERO
 	if cam != null:

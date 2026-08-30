@@ -462,6 +462,7 @@ func _do_wall_jump() -> void:
 	_cut_jump = false
 	_sfx("wall_jump", -3.0)
 	_burst_fx()
+	shake(0.14)
 	_squash(Vector2(0.75, 1.25))
 	_spawn_wall_jump_slash(normal.x)
 

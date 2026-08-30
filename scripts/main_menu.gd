@@ -78,13 +78,16 @@ func _build() -> void:
 	col.add_child(row)
 	for i in Globals.LEVELS.size():
 		var locked: bool = i > Globals.unlocked_level
-		var txt := "LEVEL %d" % (i + 1)
+		var stars := Globals.stars_for_level(i) if not locked else 0
+		var txt := "LEVEL %d  %s" % [i + 1, ("★".repeat(stars) + "☆☆☆").left(3)]
 		if locked:
 			txt += "  [LOCKED]"
 		var idx := i
 		var b := _small_button(row, txt, func() -> void: Globals.start_game(idx), locked)
 		if i == Globals.unlocked_level:
 			b.add_theme_color_override("font_color", Color("#facc15"))
+		elif not locked and stars == 3:
+			b.add_theme_color_override("font_color", Color("#a3e635"))
 
 	var gap2 := Control.new()
 	gap2.custom_minimum_size = Vector2(0, 6)
