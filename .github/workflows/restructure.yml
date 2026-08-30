@@ -1,0 +1,141 @@
+name: 🚀 ParkourMesh - Auto Restructure & Asset Migration
+
+on:
+
+  workflow_dispatch:
+
+jobs:
+  restructure:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create 3D Structure
+        run: |
+          mkdir -p game/assets/characters
+          mkdir -p game/assets/vfx/slash_effects
+          mkdir -p game/assets/ui
+          mkdir -p game/assets/platforms
+          mkdir -p game/src/core
+          mkdir -p game/src/legacy
+          mkdir -p game/scenes
+
+      - name: Migrate Assets
+        run: |
+          [ -d "assets/character_textures" ] && cp -r assets/character_textures/* game/assets/characters/ || true
+          [ -d "assets/slash_effects" ] && cp -r assets/slash_effects/* game/assets/vfx/slash_effects/ || true
+          [ -d "assets/ui_icons" ] && cp -r assets/ui_icons/* game/assets/ui/ || true
+          [ -d "assets/platformer_textures" ] && cp -r assets/platformer_textures/* game/assets/platforms/ || true
+          [ -d "scripts" ] && cp -r scripts/* game/src/legacy/ || true
+          [ -d "scenes" ] && cp -r scenes/* game/scenes/ || true
+
+      - name: Generate PlayerController.gd
+        run: |
+          cat > game/src/core/PlayerController.gd << 'EOF'
+          extends CharacterBody3D
+          class_name ParkourPlayer
+
+          @export var move_speed : float = 8.0
+          @export var jump_velocity : float = 12.0
+          @export var dash_speed : float = 22.0
+          @export var coyote_time_duration : float = 0.15
+          @export var jump_buffer_duration : float = 0.12
+          @export var wall_slide_friction : float = 0.3
+          @export var gravity : float = 30.0
+
+          enum States { GROUNDED, AIRBORNE, WALL_SLIDING, DASHING }
+          var current_state : States = States.GROUNDED
+          var coyote_timer : float = 0.0
+          var buffer_timer : float = 0.0
+          var dash_timer : float = 0.0
+          var move_direction : Vector3 = Vector3.ZERO
+
+          @onready var camera_pivot : Node3D = $CameraPivot
+          @onready var vfx_spawner : Node3D = $VFX_Spawner
+
+          func _physics_process(delta: float) -> void:
+              var input_dir := Input.get_vector("left", "right", "forward", "back")
+              var cam_basis := camera_pivot.global_transform.basis
+              var direction := (cam_basis.z * input_dir.y + cam_basis.x * input_dir.x).normalized()
+              move_direction = direction
+
+              if Input.is_action_just_pressed("jump"):
+                  buffer_timer = jump_buffer_duration
+              
+              if is_on_floor():
+                  coyote_timer = coyote_time_duration
+                  if current_state != States.DASHING:
+                      current_state = States.GROUNDED
+              else:
+                  coyote_timer -= delta
+                  if current_state != States.DASHING and current_state != States.WALL_SLIDING:
+                      current_state = States.AIRBORNE
+
+              if not is_on_floor() and velocity.y < -1.0 and is_on_wall_only():
+                  if move_direction.dot(get_wall_normal()) < -0.7:
+                      current_state = States.WALL_SLIDING
+                      velocity.y = lerp(velocity.y, -2.0, wall_slide_friction)
+                      if Input.is_action_just_pressed("jump"):
+                          velocity.y = jump_velocity * 1.2
+                          velocity += get_wall_normal() * dash_speed * 0.5
+                          current_state = States.AIRBORNE
+
+              if buffer_timer > 0 and (coyote_timer > 0 or current_state == States.WALL_SLIDING):
+                  velocity.y = jump_velocity
+                  buffer_timer = 0.0
+                  coyote_timer = 0.0
+                  current_state = States.AIRBORNE
+                  
+              if Input.is_action_just_released("jump") and velocity.y > 0:
+                  velocity.y *= 0.65
+
+              if Input.is_action_just_pressed("dash") and dash_timer <= 0:
+                  current_state = States.DASHING
+                  dash_timer = 0.3
+                  velocity = move_direction * dash_speed
+                  spawn_vfx("fire")
+
+              if dash_timer > 0:
+                  dash_timer -= delta
+                  if dash_timer <= 0 and is_on_floor():
+                      current_state = States.GROUNDED
+                  elif dash_timer <= 0:
+                      current_state = States.AIRBORNE
+
+              if not is_on_floor() and current_state != States.WALL_SLIDING and current_state != States.DASHING:
+                  velocity.y -= gravity * delta
+              
+              if current_state != States.DASHING:
+                  var target_vel = move_direction * move_speed
+                  velocity.x = lerp(velocity.x, target_vel.x, 10.0 * delta)
+                  velocity.z = lerp(velocity.z, target_vel.z, 10.0 * delta)
+              
+              move_and_slide()
+
+          func spawn_vfx(element: String) -> void:
+              var vfx_path := "res://game/assets/vfx/slash_effects/" + element + "/"
+              var dir := DirAccess.open(vfx_path)
+              if dir:
+                  var files := dir.get_files()
+                  if files.size() > 0:
+                      var texture := load(vfx_path + files[0])
+                      if texture:
+                          var sprite := Sprite3D.new()
+                          sprite.texture = texture
+                          sprite.position = Vector3.UP * 1.5
+                          vfx_spawner.add_child(sprite)
+                          await get_tree().create_timer(0.5).timeout
+                          sprite.queue_free()
+          EOF
+
+      - name: Commit Changes
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add .
+          git commit -m "🤖 Auto-restructure: 3D migration complete" || echo "✅ No changes"
+          git push
