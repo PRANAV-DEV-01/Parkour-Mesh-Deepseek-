@@ -2,7 +2,7 @@
 
 A fast-paced 2D neon parkour platformer built with **Godot 4.3**.
 
-Run, double-jump, wall-jump and dash through three handcrafted levels of
+Run, double-jump, wall-jump and dash through six handcrafted levels of
 the Mesh. Collect shards, dodge spikes, ride moving platforms, bounce off
 springs and reach the portal!
 
@@ -54,9 +54,16 @@ On Android/iOS the game shows on-screen touch controls automatically
    laser-swept summit leap.
 3. **Core Runner** — dash gaps, spike corridors, spring launches, rotating
    lasers and drone-patrolled jumps.
+4. **Crystal Caves** — crumble-platform climbs, laser swathes and a drone
+   that guards the way to the spring escape.
+5. **Tower Ascent** — a tall vertical shaft of wall-jumps, crumbling ledges
+   and a high-goal spring finale.
+6. **The Gauntlet** — the finale: spikes, lasers, drones, crumbling ground,
+   vertical moving platforms and springs in one combined run.
 
-Each level tracks your time, shard count and deaths. Beat a level to
-unlock the next one (progress is saved automatically).
+Each level tracks your time, shard count and deaths. Collect shards for a
+**1–3 star rating** (more shards = more stars). Beat a level to unlock the
+next one (progress is saved automatically).
 
 ## Features
 
@@ -68,12 +75,15 @@ unlock the next one (progress is saved automatically).
 - **Rotating laser beams** guarding key crossings — read the sweep.
 - **Shard streaks**: grab shards quickly in succession to build a combo;
   the coin pitch climbs with every link. Best streak is saved per level.
-- Camera zoom punches, screen shake, respawn rings and squash & stretch.
-- Fully procedural audio — every sound effect and the music loop are
-  synthesized at startup, so the project needs zero external assets.
+- Camera zoom punches, screen shake (dash, death, landing, wall-jump),
+  dash trails, landing dust and squash & stretch.
+- Procedural neon gradient sky + animated parallax grid background.
+- Fully procedural audio — every sound effect and the synthwave music loop
+  are synthesized at startup, so the project needs zero external assets.
 - Procedural parallax grid background and particles.
-- Main menu with level select + how-to-play, pause menu, level-complete
-  stats and a final results screen. Best times persist between sessions.
+- Main menu with level select (shard-based star ratings) + how-to-play,
+  pause menu, level-complete stats and a final results screen. Best times
+  persist between sessions.
 
 ## Project Layout
 
@@ -83,7 +93,7 @@ Parkour Mesh/
 ├── icon.svg
 ├── scenes/              # All scenes (.tscn)
 │   ├── main_menu.tscn   # Main menu (starting scene)
-│   ├── level_1..3.tscn  # The three levels
+│   ├── level_1..6.tscn  # The six levels
 │   ├── player.tscn      # Player character
 │   └── ...              # Platforms, hazards, pickups, HUD, etc.
 └── scripts/             # All GDScript code (.gd)
@@ -94,5 +104,24 @@ Parkour Mesh/
 
 Everything (visuals and audio) is generated procedurally in code, so the
 project has no asset dependencies — just open and play.
+
+## Building / CI
+
+A GitHub Actions workflow ([`.github/workflows/build.yml`](.github/workflows/build.yml))
+builds the game for all supported targets on every push and on tags:
+
+- **Web (HTML5)** → `build/web/index.html`
+- **Windows** → `build/windows/ParkourMesh.exe`
+- **Linux** → `build/linux/ParkourMesh.x86_64`
+- **Android** → `build/android/ParkourMesh-debug.apk` (signed debug APK)
+
+At build time Godot 4.3 is installed with its export templates and each
+platform is exported headlessly. Pushing a `v*` tag also creates a GitHub
+Release with the packaged binaries attached. Build artifacts from every run
+are uploaded as a zip (`parkour-mesh-builds`).
+
+To export locally instead, install the matching Godot 4.3 export templates
+(**Editor → Manage Export Templates**), then use **Project → Export** and
+pick a preset from `export_presets.cfg`.
 
 Have fun, and speedrun the Mesh!

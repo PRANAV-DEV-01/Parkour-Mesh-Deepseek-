@@ -1,0 +1,60 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot 4.3
+        uses: chickencrossing/setup-godot@v5
+        with:
+          version: 4.3
+          export-templates: true
+
+      - name: Export Web (HTML5)
+        run: godot --headless --path . --export-debug "Web" build/web/index.html
+
+      - name: Export Windows
+        run: godot --headless --path . --export-debug "Windows Desktop" build/windows/ParkourMesh.exe
+
+      - name: Export Linux
+        run: godot --headless --path . --export-debug "Linux" build/linux/ParkourMesh.x86_64
+
+      - name: Export Android (debug APK)
+        run: godot --headless --path . --export-debug "Android" build/android/ParkourMesh-debug.apk
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: parkour-mesh-builds
+          path: build/
+          if-no-files-found: error
+
+      - name: Package zip for release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd build
+          zip -r ../parkour-mesh-web.zip web
+          cd ..
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/windows/ParkourMesh.exe
+            build/linux/ParkourMesh.x86_64
+            build/android/ParkourMesh-debug.apk
+            parkour-mesh-web.zip
+          generate_release_notes: true
