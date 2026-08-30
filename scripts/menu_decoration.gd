@@ -3,12 +3,12 @@ extends Node2D
 ## Adds decorative slash effect icons and animated particles to menus.
 
 const ICON_PATHS := {
-	"fire": "res://assets/ui_icons/Icons_Fire Slash.png",
-	"lightning": "res://assets/ui_icons/Icons_Lightning Slash.png",
-	"water": "res://assets/ui_icons/Icons_Water Slash.png",
-	"wind": "res://assets/ui_icons/Icons_Wind Slash.png",
-	"poison": "res://assets/ui_icons/Icons_Poisonous Slash.png",
-	"ultimate": "res://assets/ui_icons/Icons_Ultimate Slash.png",
+	"fire": "res://Icons_Fire Slash.png",
+	"lightning": "res://Icons_Lightning Slash.png",
+	"water": "res://Icons_Water Slash.png",
+	"wind": "res://Icons_Wind Slash.png",
+	"poison": "res://Icons_Poisonous Slash.png",
+	"ultimate": "res://Icons_Ultimate Slash.png",
 }
 
 static func add_icon(parent: Node2D, pos: Vector2, icon_name: String,
