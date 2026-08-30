@@ -23,6 +23,9 @@ jobs:
           use-dotnet: false
           include-templates: true
 
+      - name: Create build directories
+        run: mkdir -p build/web build/windows build/linux build/android
+
       - name: Export Web (HTML5)
         run: godot --headless --path . --export-debug "Web" build/web/index.html
 
