@@ -158,11 +158,21 @@ func _coin_total_for(index: int) -> int:
 	if scene == null:
 		return 0
 	var inst: Node = scene.instantiate()
-	var total := 0
-	for n in inst.get_nodes_in_group("shard"):
-		total += 1
+	# Count Coin-typed nodes recursively. This works even though the instance
+	# is NOT in the tree yet (coins only join the "shard" group in _ready()),
+	# so counting the group on a detached instance would always return 0.
+	var total := _accumulate_coins(inst, 0)
 	inst.free()
 	return total
+
+
+func _accumulate_coins(n: Node, count: int) -> int:
+	var s: Variant = n.get_script()
+	if s != null and s is Script and s.get_global_name() == "Coin":
+		count += 1
+	for c in n.get_children():
+		count = _accumulate_coins(c, count)
+	return count
 
 
 ## Rebuild lifetime shard total from the per-level bests so it stays an
