@@ -1,0 +1,200 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/platform.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/crumble_platform.tscn" id="6x"]
+[ext_resource type="PackedScene" path="res://scenes/spike.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/coin.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/checkpoint.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/goal.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/spring.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/drone.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/laser.tscn" id="13"]
+
+[node name="Level6" type="Node2D"]
+script = ExtResource("1")
+display_name = "LEVEL 6 - THE GAUNTLET"
+accent_color = Color(0.95, 0.79, 0.25, 1)
+camera_bounds = Rect2(-360, -1900, 8200, 2400)
+kill_y = 1000.0
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="StartGround" parent="World" instance=ExtResource("4")]
+position = Vector2(0, 45)
+size = Vector2(680, 90)
+
+[node name="PadA" parent="World" instance=ExtResource("4")]
+position = Vector2(820, 8)
+size = Vector2(200, 36)
+
+[node name="PadB" parent="World" instance=ExtResource("4")]
+position = Vector2(1240, -15)
+size = Vector2(190, 36)
+
+[node name="Corridor" parent="World" instance=ExtResource("4")]
+position = Vector2(2050, -15)
+size = Vector2(760, 36)
+
+[node name="PitFloor" parent="World" instance=ExtResource("4")]
+position = Vector2(2930, 90)
+size = Vector2(860, 40)
+
+[node name="Crumble1" parent="World" instance=ExtResource("6x")]
+position = Vector2(2680, -92)
+size = Vector2(130, 24)
+
+[node name="Crumble2" parent="World" instance=ExtResource("6x")]
+position = Vector2(2900, -140)
+size = Vector2(130, 24)
+
+[node name="Crumble3" parent="World" instance=ExtResource("6x")]
+position = Vector2(3120, -188)
+size = Vector2(130, 24)
+
+[node name="PadC" parent="World" instance=ExtResource("4")]
+position = Vector2(3460, -220)
+size = Vector2(200, 30)
+
+[node name="PadD" parent="World" instance=ExtResource("4")]
+position = Vector2(4040, -250)
+size = Vector2(220, 36)
+
+[node name="HighE" parent="World" instance=ExtResource("4")]
+position = Vector2(4610, -540)
+size = Vector2(200, 30)
+
+[node name="MoverV1" parent="World" instance=ExtResource("5")]
+position = Vector2(4700, -620)
+size = Vector2(140, 26)
+move_offset = Vector2(0, -180)
+duration = 2.2
+
+[node name="MoverV2" parent="World" instance=ExtResource("5")]
+position = Vector2(4860, -800)
+size = Vector2(140, 26)
+move_offset = Vector2(0, -180)
+duration = 2.2
+
+[node name="HighF" parent="World" instance=ExtResource("4")]
+position = Vector2(5020, -955)
+size = Vector2(220, 30)
+
+[node name="HighG" parent="World" instance=ExtResource("4")]
+position = Vector2(5700, -985)
+size = Vector2(260, 36)
+
+[node name="FinalH" parent="World" instance=ExtResource("4")]
+position = Vector2(6280, -1015)
+size = Vector2(320, 40)
+
+[node name="MoverH" parent="World" instance=ExtResource("5")]
+position = Vector2(6220, -1015)
+size = Vector2(160, 26)
+move_offset = Vector2(280, 0)
+duration = 2.6
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="CorrSpikes" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(1900, -30)
+count = 4
+spacing = 30.0
+
+[node name="CorrSpikes2" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(2250, -30)
+count = 4
+spacing = 30.0
+
+[node name="PitSpikes" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(2760, 75)
+count = 14
+spacing = 32.0
+
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(760, -100)
+
+[node name="Coin2" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1280, -105)
+
+[node name="Coin3" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1940, -125)
+
+[node name="Coin4" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2290, -125)
+
+[node name="Coin5" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2680, -175)
+
+[node name="Coin6" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2900, -220)
+
+[node name="Coin7" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(3120, -265)
+
+[node name="Coin8" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(4050, -330)
+
+[node name="Coin9" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(4610, -613)
+
+[node name="Coin10" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(4700, -880)
+
+[node name="Coin11" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(5020, -1028)
+
+[node name="Coin12" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(6220, -1100)
+
+[node name="Extras" type="Node2D" parent="."]
+
+[node name="SpringPit" parent="Extras" instance=ExtResource("11")]
+position = Vector2(3150, 70)
+
+[node name="SpringHigh" parent="Extras" instance=ExtResource("11")]
+position = Vector2(4060, -270)
+
+[node name="Checkpoint1" parent="Extras" instance=ExtResource("9")]
+position = Vector2(2050, -40)
+
+[node name="Checkpoint2" parent="Extras" instance=ExtResource("9")]
+position = Vector2(3460, -235)
+
+[node name="Checkpoint3" parent="Extras" instance=ExtResource("9")]
+position = Vector2(5700, -1000)
+
+[node name="Drone1" parent="Extras" instance=ExtResource("12")]
+position = Vector2(2050, -130)
+patrol_offset = Vector2(220, 0)
+duration = 2.0
+
+[node name="Drone2" parent="Extras" instance=ExtResource("12")]
+position = Vector2(5700, -1090)
+patrol_offset = Vector2(180, 0)
+duration = 2.4
+
+[node name="Laser1" parent="Extras" instance=ExtResource("13")]
+position = Vector2(1520, -120)
+length = 120.0
+speed_rad = 2.2
+start_angle = -1.57
+
+[node name="Laser2" parent="Extras" instance=ExtResource("13")]
+position = Vector2(4600, -390)
+length = 150.0
+speed_rad = -1.9
+start_angle = 0.8
+
+[node name="Goal" parent="Extras" instance=ExtResource("10")]
+position = Vector2(6280, -1065)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(-150, -60)
+
+[node name="HUD" parent="." instance=ExtResource("3")]

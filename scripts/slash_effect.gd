@@ -64,19 +64,54 @@ static func _get_frames(type: SlashType) -> SpriteFrames:
 	sf.set_animation_speed(&"default", 24.0)
 	sf.set_animation_loop(&"default", false)
 
+	# First try the real sprite-sheet folder (present when the full asset
+	# pack was migrated in). Load whatever frames match the expected name.
 	var folder: String = _FOLDER_MAP[type]
 	var frame_count: int = _FRAME_COUNTS[type]
 	var frame_name: String = _FRAME_NAMES[type]
-
+	var loaded := 0
 	for i in range(1, frame_count + 1):
-		var path := "%s%s_Frame_%02d.png" % [folder, frame_name, i]
-		var img: Image = Image.load_from_file(path)
-		if img != null:
-			var tex := ImageTexture.create_from_image(img)
-			sf.add_frame(&"default", tex)
+		var img: Image = Image.load_from_file("%s%s_Frame_%02d.png" % [folder, frame_name, i])
+		if img == null:
+			break
+		sf.add_frame(&"default", ImageTexture.create_from_image(img))
+		loaded += 1
+
+	# Fallback: the source folder is missing (restructure left only loose
+	# frames at the repo root). Sample whatever loose "X_Frame_0N.png" files
+	# exist so dashes / wall-jumps still read as animated slashes.
+	if loaded == 0:
+		loaded = _fallback_frames(type, sf)
 
 	_cache[type] = sf
 	return sf
+
+
+static func _fallback_frames(type: SlashType, sf: SpriteFrames) -> int:
+	var frame_names := {
+		SlashType.FIRE: "Icons_Fire Slash",
+		SlashType.LIGHTNING: "Icons_Lightning Slash",
+		SlashType.WATER: "Icons_Water Slash",
+		SlashType.WIND: "Double Wind Slashes",
+		SlashType.POISON: "Icons_Poisonous Slash",
+		SlashType.DOUBLE_WIND: "Double Wind Slashes",
+		SlashType.ULTIMATE: "Icons_Ultimate Slash",
+	}
+	var base_name: String = frame_names[type]
+	var added := 0
+	for i in range(1, 20):
+		var path := "res://%s_Frame_%02d.png" % [base_name, i]
+		var img: Image = Image.load_from_file(path)
+		if img == null:
+			img = Image.load_from_file("res://%s.png" % base_name)
+		if img == null:
+			break
+		var tex := ImageTexture.create_from_image(img)
+		sf.add_frame(&"default", tex)
+		added += 1
+		if sf.get_frame_count(&"default") > 1:
+			break
+	return added
 
 
 ## Convenience factory: creates, parents, and returns a configured SlashEffect.

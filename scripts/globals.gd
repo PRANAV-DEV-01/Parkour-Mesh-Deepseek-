@@ -8,11 +8,17 @@ const LEVELS: Array[String] = [
 	"res://scenes/level_1.tscn",
 	"res://scenes/level_2.tscn",
 	"res://scenes/level_3.tscn",
+	"res://scenes/level_4.tscn",
+	"res://scenes/level_5.tscn",
+	"res://scenes/level_6.tscn",
 ]
 const LEVEL_NAMES: Array[String] = [
 	"First Steps",
 	"Neon Heights",
 	"Core Runner",
+	"Crystal Caves",
+	"Tower Ascent",
+	"The Gauntlet",
 ]
 
 # --- Run statistics -------------------------------------------------------
@@ -29,7 +35,10 @@ var run_total_coins := 0
 # --- Save data ------------------------------------------------------------
 var best_times := {}      # int level index -> float seconds
 var best_combos := {}     # int level index -> int best shard streak
+var level_shards := {}    # int level index -> int shards collected (best)
 var unlocked_level := 0   # highest index available in level select
+var total_coins := 0      # lifetime shards collected across all runs
+var total_deaths := 0     # lifetime deaths across all runs
 
 # --- Audio ----------------------------------------------------------------
 var _sfx_streams: Dictionary = {}
@@ -124,13 +133,63 @@ func finish_level(time_seconds: float, coins: int, deaths: int,
 	run_total_time += time_seconds
 	run_total_deaths += deaths
 	run_total_coins += coins
+	total_deaths += deaths
 	unlocked_level = maxi(unlocked_level, mini(current_level_index + 1, LEVELS.size() - 1))
 	var idx := current_level_index
 	if not best_times.has(idx) or time_seconds < float(best_times[idx]):
 		best_times[idx] = time_seconds
 	if not best_combos.has(idx) or best_combo > int(best_combos[idx]):
 		best_combos[idx] = maxi(best_combo, 0)
+	# Track best shard total per level for the star rating on level select.
+	var coin_total := _coin_total_for(idx)
+	if coin_total > 0 and not level_shards.has(idx) \
+			or coin_total > 0 and int(level_shards.get(idx, 0)) < coins:
+		level_shards[idx] = coins
+	# Lifetime shard stats only count a level's shards once (per completed
+	# run best), not the monotonic per-finish sum, to stay meaningful.
+	_reconcile_total_coins()
 	save_progress()
+
+
+## Total shard count for a level, derived from the packed scene node group
+## so it does not need to be hardcoded or persisted.
+func _coin_total_for(index: int) -> int:
+	var scene := load(LEVELS[index])
+	if scene == null:
+		return 0
+	var inst: Node = scene.instantiate()
+	var total := 0
+	for n in inst.get_nodes_in_group("shard"):
+		total += 1
+	inst.free()
+	return total
+
+
+## Rebuild lifetime shard total from the per-level bests so it stays an
+## idempotent "how many unique shards have I grabbed" statistic.
+func _reconcile_total_coins() -> void:
+	var t := 0
+	for idx in level_shards:
+		t += int(level_shards[idx])
+	total_coins = t
+
+
+## 0-3 star rating for a level based on shard collection fraction.
+func stars_for_level(index: int) -> int:
+	var got := int(level_shards.get(index, 0))
+	if got <= 0 and not level_shards.has(index):
+		return 0
+	var total := _coin_total_for(index)
+	if total <= 0:
+		return 1
+	var f := float(got) / float(total)
+	if f >= 0.99:
+		return 3
+	if f >= 0.66:
+		return 2
+	if f >= 0.33:
+		return 1
+	return 0
 
 
 # --- Save / load ----------------------------------------------------------
@@ -141,7 +200,10 @@ func save_progress() -> void:
 	f.store_string(JSON.stringify({
 		"best_times": best_times,
 		"best_combos": best_combos,
+		"level_shards": level_shards,
 		"unlocked_level": unlocked_level,
+		"total_coins": total_coins,
+		"total_deaths": total_deaths,
 	}))
 
 
@@ -162,6 +224,12 @@ func load_progress() -> void:
 	if typeof(bc) == TYPE_DICTIONARY:
 		for k in bc:
 			best_combos[int(k)] = maxi(int(bc[k]), 0)
+	var ls = data.get("level_shards", {})
+	if typeof(ls) == TYPE_DICTIONARY:
+		for k in ls:
+			level_shards[int(k)] = maxi(int(ls[k]), 0)
+	total_coins = maxi(int(data.get("total_coins", 0)), 0)
+	total_deaths = maxi(int(data.get("total_deaths", 0)), 0)
 	unlocked_level = clampi(int(data.get("unlocked_level", 0)), 0, LEVELS.size() - 1)
 
 

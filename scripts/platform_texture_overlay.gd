@@ -4,11 +4,11 @@ extends Node2D
 ## The texture is loaded at runtime and displayed as a low-alpha Sprite2D.
 
 const _TEXTURE_MAP := {
-	"neutral": "res://assets/platformer_textures/platformer_texture.png",
-	"blue": "res://assets/platformer_textures/platformer_texture_blue.png",
-	"red": "res://assets/platformer_textures/platformer_texture_red.png",
-	"green": "res://assets/platformer_textures/platformer_texture_green.png",
-	"yellow": "res://assets/platformer_textures/platformer_texture_yellow.png",
+	"neutral": "res://platformer_texture.png",
+	"blue": "res://platformer_texture_blue.png",
+	"red": "res://platformer_texture_red.png",
+	"green": "res://platformer_texture_green.png",
+	"yellow": "res://platformer_texture_yellow.png",
 }
 
 static func add_to(parent: Node2D, p_size: Vector2,

@@ -84,7 +84,7 @@ func _add_texture_overlay() -> void:
 	if size.x < 100.0 or size.y < 20.0:
 		return
 	var tex := AssetLoader.load_texture_scaled(
-			"res://assets/platformer_textures/platformer_texture.png",
+			"res://platformer_texture.png",
 			minf(size.x, size.y) * 0.85)
 	if tex == null:
 		return

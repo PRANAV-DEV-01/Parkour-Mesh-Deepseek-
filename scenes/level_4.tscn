@@ -1,0 +1,176 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/platform.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/crumble_platform.tscn" id="6x"]
+[ext_resource type="PackedScene" path="res://scenes/spike.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/coin.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/checkpoint.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/goal.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/spring.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/drone.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/laser.tscn" id="13"]
+
+[node name="Level4" type="Node2D"]
+script = ExtResource("1")
+display_name = "LEVEL 4 - NEON ROOFTOPS"
+accent_color = Color(0.949, 0.788, 0.251, 1)
+camera_bounds = Rect2(-360, -1400, 7600, 2100)
+kill_y = 800.0
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="StartGround" parent="World" instance=ExtResource("4")]
+position = Vector2(0, 45)
+size = Vector2(640, 90)
+
+[node name="PadA" parent="World" instance=ExtResource("4")]
+position = Vector2(740, 8)
+size = Vector2(200, 36)
+
+[node name="PadB" parent="World" instance=ExtResource("4")]
+position = Vector2(1130, -22)
+size = Vector2(190, 36)
+
+[node name="RoofC" parent="World" instance=ExtResource("4")]
+position = Vector2(1720, -62)
+size = Vector2(360, 40)
+
+[node name="RoofD" parent="World" instance=ExtResource("4")]
+position = Vector2(2450, -62)
+size = Vector2(300, 40)
+
+[node name="GapFloor" parent="World" instance=ExtResource("4")]
+position = Vector2(2900, 80)
+size = Vector2(760, 40)
+
+[node name="CrumbleA" parent="World" instance=ExtResource("6x")]
+position = Vector2(2720, -100)
+size = Vector2(130, 24)
+
+[node name="CrumbleB" parent="World" instance=ExtResource("6x")]
+position = Vector2(2910, -150)
+size = Vector2(130, 24)
+
+[node name="CrumbleC" parent="World" instance=ExtResource("6x")]
+position = Vector2(3100, -200)
+size = Vector2(130, 24)
+
+[node name="HighE" parent="World" instance=ExtResource("4")]
+position = Vector2(3590, -245)
+size = Vector2(200, 30)
+
+[node name="HighF" parent="World" instance=ExtResource("4")]
+position = Vector2(4160, -272)
+size = Vector2(230, 36)
+
+[node name="HighG" parent="World" instance=ExtResource("4")]
+position = Vector2(4730, -552)
+size = Vector2(200, 30)
+
+[node name="StepH" parent="World" instance=ExtResource("4")]
+position = Vector2(5050, -574)
+size = Vector2(160, 26)
+
+[node name="StepI" parent="World" instance=ExtResource("4")]
+position = Vector2(5350, -614)
+size = Vector2(160, 26)
+
+[node name="FinalJ" parent="World" instance=ExtResource("4")]
+position = Vector2(5740, -647)
+size = Vector2(320, 40)
+
+[node name="Mover1" parent="World" instance=ExtResource("5")]
+position = Vector2(2120, -92)
+size = Vector2(150, 26)
+move_offset = Vector2(300, 0)
+duration = 2.1
+
+[node name="Mover2" parent="World" instance=ExtResource("5")]
+position = Vector2(4380, -330)
+size = Vector2(140, 26)
+move_offset = Vector2(0, -160)
+duration = 2.4
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="GapSpikes" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(2700, 62)
+count = 12
+spacing = 32.0
+
+[node name="RoofSpikes" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(2250, -76)
+count = 3
+spacing = 30.0
+
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(680, -100)
+
+[node name="Coin2" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1170, -110)
+
+[node name="Coin3" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1900, -150)
+
+[node name="Coin4" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1960, -110)
+
+[node name="Coin5" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2280, -155)
+
+[node name="Coin6" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2720, -180)
+
+[node name="Coin7" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2910, -230)
+
+[node name="Coin8" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(3650, -320)
+
+[node name="Coin9" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(4730, -625)
+
+[node name="Coin10" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(5050, -640)
+
+[node name="Coin11" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(5650, -760)
+
+[node name="Coin12" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(3110, -270)
+
+[node name="Extras" type="Node2D" parent="."]
+
+[node name="SpringEscape" parent="Extras" instance=ExtResource("11")]
+position = Vector2(3590, -260)
+
+[node name="Checkpoint1" parent="Extras" instance=ExtResource("9")]
+position = Vector2(1720, -80)
+
+[node name="Checkpoint2" parent="Extras" instance=ExtResource("9")]
+position = Vector2(3900, -260)
+
+[node name="Drone1" parent="Extras" instance=ExtResource("12")]
+position = Vector2(1900, -160)
+patrol_offset = Vector2(0, -70)
+duration = 1.9
+
+[node name="Laser1" parent="Extras" instance=ExtResource("13")]
+position = Vector2(1590, -170)
+length = 110.0
+speed_rad = 2.2
+start_angle = -1.57
+
+[node name="Goal" parent="Extras" instance=ExtResource("10")]
+position = Vector2(5730, -707)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(-150, -60)
+
+[node name="HUD" parent="." instance=ExtResource("3")]
