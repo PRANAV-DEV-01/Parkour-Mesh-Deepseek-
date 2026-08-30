@@ -1,0 +1,123 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/platform.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/spike.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/coin.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/checkpoint.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/goal.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/spring.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/drone.tscn" id="12"]
+
+[node name="Level1" type="Node2D"]
+script = ExtResource("1")
+display_name = "LEVEL 1 - FIRST STEPS"
+accent_color = Color(0.1333, 0.8275, 0.9333, 1)
+camera_bounds = Rect2(-360, -760, 4320, 1360)
+kill_y = 600.0
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Ground" parent="World" instance=ExtResource("4")]
+position = Vector2(0, 45)
+size = Vector2(640, 90)
+
+[node name="StepA" parent="World" instance=ExtResource("4")]
+position = Vector2(580, -2)
+size = Vector2(180, 36)
+
+[node name="StepB" parent="World" instance=ExtResource("4")]
+position = Vector2(950, -42)
+size = Vector2(200, 36)
+
+[node name="LedgeC" parent="World" instance=ExtResource("4")]
+position = Vector2(1650, -52)
+size = Vector2(240, 36)
+
+[node name="GroundD" parent="World" instance=ExtResource("4")]
+position = Vector2(2330, 45)
+size = Vector2(700, 90)
+
+[node name="HighF" parent="World" instance=ExtResource("4")]
+position = Vector2(2810, -252)
+size = Vector2(220, 36)
+
+[node name="HighG" parent="World" instance=ExtResource("4")]
+position = Vector2(3260, -292)
+size = Vector2(240, 36)
+
+[node name="FinalH" parent="World" instance=ExtResource("4")]
+position = Vector2(3720, -320)
+size = Vector2(320, 40)
+
+[node name="Mover1" parent="World" instance=ExtResource("5")]
+position = Vector2(1130, -55)
+size = Vector2(150, 26)
+move_offset = Vector2(230, 0)
+duration = 2.2
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Spikes1" parent="Hazards" instance=ExtResource("7")]
+position = Vector2(2170, 0)
+count = 3
+spacing = 30.0
+
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(-240, -90)
+
+[node name="Coin2" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(0, -60)
+
+[node name="Coin3" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(140, -60)
+
+[node name="Coin4" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(500, -95)
+
+[node name="Coin5" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(950, -135)
+
+[node name="Coin6" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1250, -145)
+
+[node name="Coin7" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1880, -130)
+
+[node name="Coin8" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2500, -280)
+
+[node name="Coin9" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(2760, -330)
+
+[node name="Coin10" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(3260, -380)
+
+[node name="Coin11" parent="Pickups" instance=ExtResource("8")]
+position = Vector2(1650, -175)
+
+[node name="Extras" type="Node2D" parent="."]
+
+[node name="Spring1" parent="Extras" instance=ExtResource("11")]
+position = Vector2(2380, 0)
+
+[node name="Checkpoint1" parent="Extras" instance=ExtResource("9")]
+position = Vector2(1650, -70)
+
+[node name="Drone1" parent="Extras" instance=ExtResource("12")]
+position = Vector2(1200, -225)
+patrol_offset = Vector2(-90, 0)
+duration = 3.0
+
+[node name="Goal" parent="Extras" instance=ExtResource("10")]
+position = Vector2(3700, -390)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(-150, -60)
+
+[node name="HUD" parent="." instance=ExtResource("3")]
