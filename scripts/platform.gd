@@ -97,3 +97,19 @@ func _add_texture_overlay() -> void:
 	sprite.modulate = Color(1, 1, 1, 0.1)
 	sprite.z_index = -1
 	add_child(sprite)
+
+
+## Spawn a plain static Platform instance at a world position, parented under
+## the level's "World" node (or the given parent). Used by the Level Adapter
+## to add a safety platform without disturbing existing node paths.
+static func spawn_visual_static(level: Node2D, world_pos: Vector2,
+		p_size: Vector2) -> void:
+	var parent: Node = level.get_node_or_null("World")
+	if parent == null:
+		parent = level
+	var plat := Platform.new()
+	plat.name = "AdapterPlatform"
+	plat.size = p_size
+	parent.add_child(plat)
+	plat.global_position = world_pos
+	print("[Platform] spawned safety platform at ", world_pos)

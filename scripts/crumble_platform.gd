@@ -98,6 +98,23 @@ func _player_nearby() -> bool:
 	return false
 
 
+## Make this fragile platform permanently static (Living World ease
+## adaptation): it will never shake/collapse again while it lives.
+func stabilize() -> void:
+	_state = "idle"
+	set_process(false)
+	_sensor.set_deferred("monitoring", false)
+	for c in _sensor.get_children():
+		if c is CollisionShape2D:
+			c.set_deferred("disabled", true)
+	_visual_root.position = Vector2.ZERO
+	_visual_root.modulate.a = 1.0
+	collision_layer = 1
+	if _shape != null:
+		_shape.set_deferred("disabled", false)
+	print("[CrumblePlatform] stabilized at ", global_position)
+
+
 func set_accent(c: Color) -> void:
 	if _edge_line != null:
 		_edge_line.default_color = Color("#f59e0b").lerp(c, 0.25)

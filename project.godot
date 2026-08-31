@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Globals="*res://scripts/globals.gd"
+PlayerMemory="*res://src/core/PlayerMemory.gd"
 
 [display]
 

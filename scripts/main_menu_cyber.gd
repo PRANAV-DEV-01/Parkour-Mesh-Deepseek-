@@ -22,6 +22,8 @@ func _ready() -> void:
 	_build_corporate()
 	_build_level_select()
 	_build_credits()
+	_maybe_show_daily_memory()
+	PlayerMemory.record_session_start()
 
 
 func _build_background() -> void:
@@ -99,6 +101,10 @@ func _build_menu() -> void:
 	var cred := _cyber_button("CREDITS", CYAN, false)
 	col.add_child(cred)
 	cred.pressed.connect(_on_credits_pressed)
+
+	var journal := _cyber_button("DEATH JOURNAL", CYAN, false)
+	col.add_child(journal)
+	journal.pressed.connect(_on_journal_pressed)
 
 
 func _cyber_button(text: String, accent: Color, primary: bool) -> Button:
@@ -199,6 +205,94 @@ func _on_level_select_pressed() -> void:
 
 func _on_credits_pressed() -> void:
 	_credits_panel.visible = true
+
+
+func _on_journal_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/ui/death_journal.tscn")
+
+
+func _maybe_show_daily_memory() -> void:
+	if PlayerMemory.get_today_string() != String(PlayerMemory.memory["last_session_date"]):
+		_show_daily_popup()
+
+
+func _show_daily_popup() -> void:
+	var pop := Control.new()
+	pop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(pop)
+	var dim := ColorRect.new()
+	dim.color = Color(0.0, 0.01, 0.03, 0.82)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pop.add_child(dim)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pop.add_child(center)
+
+	var panel := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.02, 0.05, 0.1, 0.98)
+	sb.border_color = CYAN
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(14)
+	sb.content_margin_left = 46.0
+	sb.content_margin_right = 46.0
+	sb.content_margin_top = 34.0
+	sb.content_margin_bottom = 34.0
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.custom_minimum_size = Vector2(560, 0)
+	center.add_child(panel)
+
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 20)
+	v.alignment = BoxContainer.ALIGNMENT_CENTER
+	panel.add_child(v)
+
+	var head := Label.new()
+	head.text = "DAILY MEMORY"
+	head.add_theme_font_size_override("font_size", 34)
+	head.add_theme_color_override("font_color", CYAN_BRIGHT)
+	head.add_theme_color_override("font_outline_color", Color("#0e7490"))
+	head.add_theme_constant_override("outline_size", 6)
+	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(head)
+
+	var today := PlayerMemory.get_today_string()
+	var yesterday := PlayerMemory.get_yesterday_string()
+	var y_deaths := PlayerMemory.get_deaths_on_date(yesterday)
+	var msg := "Yesterday you died %d times. Today, run faster!" % y_deaths
+	if PlayerMemory.memory["last_session_date"] != today \
+			and String(PlayerMemory.memory["last_session_date"]) != "":
+		msg = "A fresh day on the grid. Yesterday: %d falls. Today we fly past them!" % y_deaths
+
+	var body := Label.new()
+	body.text = msg
+	body.add_theme_font_size_override("font_size", 24)
+	body.add_theme_color_override("font_color", Color("#d8fff8"))
+	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(body)
+
+	var cont := Button.new()
+	cont.text = "CONTINUE"
+	cont.add_theme_font_size_override("font_size", 24)
+	cont.custom_minimum_size = Vector2(220, 56)
+	cont.add_theme_stylebox_override("normal", _popup_btn(Color(0, 0, 0, 0.7), Color(0.2, 1, 1)))
+	cont.add_theme_stylebox_override("hover", _popup_btn(Color(0.02, 0.05, 0.08, 0.9), Color.WHITE))
+	cont.add_theme_stylebox_override("pressed", _popup_btn(Color(0.05, 0.03, 0.0, 0.9), ORANGE))
+	cont.pressed.connect(func() -> void:
+		Globals.play_sfx("click")
+		pop.queue_free())
+	v.add_child(cont)
+
+
+func _popup_btn(bg: Color, border: Color) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.border_color = border
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(8)
+	return sb
 
 
 # ---------------------------------------------------------------- overlays

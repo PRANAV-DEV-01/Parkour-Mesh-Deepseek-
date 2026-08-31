@@ -12,6 +12,15 @@ func _ready() -> void:
 	collision_layer = 0
 	collision_mask = 2
 	add_to_group("accent")
+	_build_row()
+	body_entered.connect(_on_body_entered)
+
+
+## Rebuild the row of teeth + hitboxes. Safe to call again after _ready
+## (used by the Level Adapter to extend a bit of a spike).
+func _build_row() -> void:
+	for c in get_children():
+		c.queue_free()
 	var w_total := count * spacing
 
 	var pts := PackedVector2Array()
@@ -59,7 +68,12 @@ func _ready() -> void:
 		cs.shape = tri
 		add_child(cs)
 
-	body_entered.connect(_on_body_entered)
+
+## Extend the row by [extra] teeth (Living World hazard adaptation).
+func extend_row(extra: int) -> void:
+	count += maxi(extra, 1)
+	_build_row()
+	print("[Spike] row extended to count=", count)
 
 
 func _on_body_entered(body: Node2D) -> void:

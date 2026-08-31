@@ -9,9 +9,11 @@ extends Node2D
 @export var kill_y := 1100.0
 
 const COMBO_WINDOW := 3.0   # seconds between shards to keep the streak
+const GHOST_RUN_SCRIPT := preload("res://src/core/GhostRun.gd")
 
 var player: Player
 var hud: GameHUD
+var ghost: Node2D
 
 var spawn_point := Vector2.ZERO
 var checkpoint_pos := Vector2.ZERO
@@ -61,6 +63,12 @@ func _ready() -> void:
 		var tc := TouchControls.new()
 		add_child(tc)
 		tc.pause_pressed.connect(hud.request_pause)
+
+	# Living World: apply a subtle level adaptation and spin up the ghost run.
+	LevelAdapter.adapt(self)
+	ghost = GHOST_RUN_SCRIPT.new()
+	add_child(ghost)
+	ghost.setup(self)
 
 
 func _process(delta: float) -> void:
@@ -126,6 +134,9 @@ func on_goal_reached() -> void:
 	var is_last := Globals.current_level_index >= Globals.LEVELS.size() - 1
 	Globals.finish_level(hud.get_elapsed(), level_coins, level_deaths,
 			best_combo)
+	PlayerMemory.record_shards(Globals.current_level_index, level_coins)
+	if ghost != null:
+		ghost.on_finish()
 	await get_tree().create_timer(0.75).timeout
 	if not is_inside_tree():
 		return
@@ -139,6 +150,8 @@ func _on_player_died() -> void:
 		return
 	level_deaths += 1
 	hud.set_deaths(level_deaths)
+	PlayerMemory.record_death(Globals.current_level_index,
+			hud.get_elapsed(), player.global_position)
 	break_combo()
 	_deaths_pending += 1
 	if not _respawn_active:

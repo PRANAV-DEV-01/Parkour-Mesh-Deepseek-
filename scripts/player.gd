@@ -36,6 +36,7 @@ var _max_jumps := 2
 var _can_dash := true
 var _dash_timer := 0.0
 var _dash_cooldown := 0.0
+var _dash_cooldown_offset := 0.0   # +/- applied by the Living World adapter
 var _dash_dir := Vector2.RIGHT
 var _facing := 1.0
 var _was_on_floor := false
@@ -473,7 +474,7 @@ func _start_dash(axis: float) -> void:
 		dir_x = _facing
 	_dash_dir = Vector2(signf(dir_x), 0.0)
 	_dash_timer = DASH_TIME
-	_dash_cooldown = DASH_COOLDOWN
+	_dash_cooldown = DASH_COOLDOWN + _dash_cooldown_offset
 	_can_dash = false
 	_cut_jump = true
 	velocity = _dash_dir * DASH_SPEED
@@ -605,6 +606,13 @@ func dash_ratio() -> float:
 	if _dash_timer > 0.0:
 		return 1.0
 	return clampf(1.0 - _dash_cooldown / DASH_COOLDOWN, 0.0, 1.0)
+
+
+## Adjust this session's dash cooldown (Living World adaptation). Positive
+## slows dashes, negative makes them faster. Clamped to stay playable.
+func set_dash_cooldown_offset(delta: float) -> void:
+	_dash_cooldown_offset = clampf(delta, -0.2, 0.2)
+	print("[Player] dash cooldown offset set to ", _dash_cooldown_offset)
 
 
 func refresh_air_moves() -> void:
